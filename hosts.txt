@@ -1,0 +1,2 @@
+[UBUNTU]
+ubuntu1 ansible_host=<server-ip>

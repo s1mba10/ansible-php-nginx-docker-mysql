@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple PHP Page</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a simple PHP web page.</p>
+    
+    <?php
+    // PHP code can go here
+    $currentDate = date('Y-m-d H:i:s');
+    echo "<p>Current Date and Time: $currentDate</p>";
+    echo "<p>Hostname is : {{ ansible_hostname }}</p>";
+    ?>
+</body>
+</html>

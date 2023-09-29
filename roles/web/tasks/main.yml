@@ -1,0 +1,78 @@
+---
+# tasks file for web
+- block: # ===Install docker===
+    - name: Install dependecies
+      apt:
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg-agent
+        - software-properties-common
+
+    - name: Adding GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Adding docker repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Install docker
+      apt:
+        name: "{{item}}"
+        state: latest
+        update_cache: yes
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-compose
+
+    - name: Start and enable docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+- block: # ===Add all required files===
+  - name: Copy nginx directory with its components
+    copy:
+      src: ./nginx
+      dest: /home/ubuntu/
+
+  - name: Copy docker-compose file
+    copy: 
+      src: ./docker-compose.yml
+      dest: /home/ubuntu/
+
+  - name: Copy php directory with its components
+    copy: 
+      src: ./php
+      dest: /home/ubuntu/
+
+- block: # ===Make docker-compose running===
+  - name: Stop running docker-compose
+    command: docker-compose down
+
+  - name: Run docker-compose
+    command: docker-compose up -d
+
+- block: # ===Generate php file===
+  - name: Create a directory
+    ansible.builtin.file:
+      path: /home/ubuntu/app/public
+      state: directory
+        
+  - name: Generate index.php file
+    template:
+      src: ./public/index.php.j2
+      dest: /home/ubuntu/app/public/index.php
+      
+
+
